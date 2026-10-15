@@ -1,3 +1,4 @@
+import 'package:app/screens/splash_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:app/screens/profile_screen.dart';
@@ -48,7 +49,7 @@ class MyApp extends StatelessWidget {
             ),
             scaffoldBackgroundColor: const Color(0xFF0F172A),
           ),
-          home: const ProfileScreen(),
+          home: const SplashScreen(),
         );
       },
     );
