@@ -1,9 +1,25 @@
 import 'package:flutter/material.dart';
+<<<<<<< HEAD
 import 'package:app/screens/profile_screen.dart';
 import 'package:app/services/app_settings.dart';
 
 void main() {
   runApp(const MyApp());
+=======
+import 'package:provider/provider.dart';
+import 'providers/quiz_provider.dart';
+import 'screens/splash_screen.dart'; 
+
+void main() {
+  runApp(
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (_) => QuizProvider()),
+      ],
+      child: const MyApp(),
+    ),
+  );
+>>>>>>> 16fcebffb6b7a735f218cb36878ec6f3c57f4927
 }
 
 class MyApp extends StatelessWidget {
@@ -11,6 +27,7 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+<<<<<<< HEAD
     return ListenableBuilder(
       listenable: AppSettings.instance,
       builder: (context, _) {
@@ -131,3 +148,17 @@ class _MyHomePageState extends State<MyHomePage> {
     );
   }
 }
+=======
+    return MaterialApp(
+      title: 'Quizzy App',
+      debugShowCheckedModeBanner: false,
+      theme: ThemeData(
+        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+        useMaterial3: true,
+      ),
+     
+      home: const SplashScreen(),
+    );
+  }
+}
+>>>>>>> 16fcebffb6b7a735f218cb36878ec6f3c57f4927
