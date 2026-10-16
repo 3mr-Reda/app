@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'home_screen.dart';
 
@@ -12,6 +13,7 @@ class _SplashScreenState extends State<SplashScreen>
     with SingleTickerProviderStateMixin {
   late final AnimationController _controller;
   late final Animation<double> _moveY;
+  Timer? _timer;
 
   @override
   void initState() {
@@ -20,24 +22,25 @@ class _SplashScreenState extends State<SplashScreen>
     // حركة الصاروخ فوق وتحت
     _controller = AnimationController(
       vsync: this,
-      duration: Duration(seconds: 1),
+      duration: const Duration(seconds: 1),
     )..repeat(reverse: true);
 
     _moveY = Tween<double>(begin: -12, end: 12).animate(
       CurvedAnimation(parent: _controller, curve: Curves.easeInOut),
     );
 
-    Future.delayed(const Duration(seconds: 3), () {
+    _timer = Timer(const Duration(seconds: 3), () {
       if (!mounted) return;
       Navigator.pushReplacement(
         context,
-        MaterialPageRoute(builder: (_) =>  HomeScreen()),
+        MaterialPageRoute(builder: (_) => const HomeScreen()),
       );
     });
   }
 
   @override
   void dispose() {
+    _timer?.cancel();
     _controller.dispose();
     super.dispose();
   }

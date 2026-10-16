@@ -6,7 +6,7 @@ class QuizProvider with ChangeNotifier {
   // 1. المتغيرات الخاصة بحالة الكويز
   int _currentQuestionIndex = 0;
   int _score = 0;
-  Map<int, int> _selectedAnswers =
+  final Map<int, int> _selectedAnswers =
       {}; // تخزين رقم السؤال والإجابة التي اختارها المستخدم
 
   // 2. Getters عشان الشاشات تعرف تقرأ البيانات

@@ -7,6 +7,7 @@ import 'package:app/widgets/profile/profile_bottom_nav_bar.dart';
 import 'package:app/widgets/profile/logout_dialog.dart';
 import 'package:app/widgets/profile/edit_name_dialog.dart';
 import 'package:app/screens/settings_screen.dart';
+import 'package:app/screens/home_screen.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -209,10 +210,23 @@ class _ProfileScreenState extends State<ProfileScreen> {
             currentIndex: _currentIndex,
             activeColor: settings.primaryColor,
             onTap: (index) {
-              setState(() {
-                _currentIndex = index;
-              });
               settings.triggerHaptic();
+              if (index == 0) {
+                if (Navigator.canPop(context)) {
+                  Navigator.pop(context);
+                } else {
+                  Navigator.pushReplacement(
+                    context,
+                    MaterialPageRoute(builder: (_) => const HomeScreen()),
+                  );
+                }
+              } else if (index == 2) {
+                _showMyResults();
+              } else {
+                setState(() {
+                  _currentIndex = index;
+                });
+              }
             },
           ),
         );
