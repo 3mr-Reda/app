@@ -3,8 +3,8 @@ import '../models/quiz_category.dart';
 import '../services/app_settings.dart';
 import '../widgets/home/category_grid.dart';
 import '../widgets/home/home_header.dart';
-import '../widgets/home/results_bottom_sheet.dart';
 import '../widgets/profile/profile_bottom_nav_bar.dart';
+import 'all_results_screen.dart';
 import 'profile_screen.dart';
 import 'quiz_details_screen.dart';
 
@@ -35,7 +35,7 @@ class _HomeScreenState extends State<HomeScreen> {
     } else if (index == 1) {
       setState(() => _currentIndex = 1);
     } else if (index == 2) {
-      ResultsBottomSheet.show(context);
+      setState(() => _currentIndex = 2);
     } else if (index == 3) {
       Navigator.push(
         context,
@@ -56,30 +56,36 @@ class _HomeScreenState extends State<HomeScreen> {
         return Scaffold(
           backgroundColor: Theme.of(context).scaffoldBackgroundColor,
           body: SafeArea(
-            child: SingleChildScrollView(
-              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  HomeHeader(
-                    onProfileTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => const ProfileScreen(),
+            child: _currentIndex == 2
+                ? AllResultsScreen(
+                    onGoHome: () => setState(() => _currentIndex = 0),
+                    onGoToQuizzes: () => setState(() => _currentIndex = 0),
+                  )
+                : SingleChildScrollView(
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 20, vertical: 16),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        HomeHeader(
+                          onProfileTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => const ProfileScreen(),
+                              ),
+                            );
+                          },
                         ),
-                      );
-                    },
+                        const SizedBox(height: 24),
+                        CategoryGrid(
+                          categories: QuizCategory.sampleCategories,
+                          onCategoryTap: _onCategoryTap,
+                        ),
+                        const SizedBox(height: 16),
+                      ],
+                    ),
                   ),
-                  const SizedBox(height: 24),
-                  CategoryGrid(
-                    categories: QuizCategory.sampleCategories,
-                    onCategoryTap: _onCategoryTap,
-                  ),
-                  const SizedBox(height: 16),
-                ],
-              ),
-            ),
           ),
           bottomNavigationBar: ProfileBottomNavBar(
             currentIndex: _currentIndex,

@@ -6,7 +6,6 @@ import 'package:app/widgets/profile/profile_menu_section.dart';
 import 'package:app/widgets/profile/profile_bottom_nav_bar.dart';
 import 'package:app/widgets/profile/logout_dialog.dart';
 import 'package:app/widgets/profile/edit_name_dialog.dart';
-import 'package:app/screens/settings_screen.dart';
 import 'package:app/screens/home_screen.dart';
 
 class ProfileScreen extends StatefulWidget {
@@ -35,15 +34,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
           ),
         );
       },
-    );
-  }
-
-  void _openSettings() {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => const SettingsScreen(),
-      ),
     );
   }
 
@@ -188,13 +178,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 // Spacing for overlapping stats card
                 const SizedBox(height: 65),
 
-                // Menu Section (My Results, Settings, Help & Support, Log Out)
+                // Menu Section (My Results, Help & Support, Log Out)
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 24),
                   child: ProfileMenuSection(
                     primaryColor: settings.primaryColor,
                     onMyResultsTap: _showMyResults,
-                    onSettingsTap: _openSettings,
                     onHelpTap: _showHelpSupport,
                     onLogoutTap: () {
                       LogoutDialog.show(context);

@@ -4,7 +4,6 @@ import 'package:app/widgets/profile/profile_menu_item.dart';
 class ProfileMenuSection extends StatelessWidget {
   final Color? primaryColor;
   final VoidCallback? onMyResultsTap;
-  final VoidCallback? onSettingsTap;
   final VoidCallback? onHelpTap;
   final VoidCallback? onLogoutTap;
 
@@ -12,7 +11,6 @@ class ProfileMenuSection extends StatelessWidget {
     super.key,
     this.primaryColor,
     this.onMyResultsTap,
-    this.onSettingsTap,
     this.onHelpTap,
     this.onLogoutTap,
   });
@@ -49,14 +47,6 @@ class ProfileMenuSection extends StatelessWidget {
             iconColor: accent,
             title: 'My Results',
             onTap: onMyResultsTap ?? () {},
-          ),
-          _buildDivider(isDark),
-          ProfileMenuItem(
-            icon: Icons.settings_outlined,
-            iconBgColor: iconBg,
-            iconColor: accent,
-            title: 'Settings',
-            onTap: onSettingsTap ?? () {},
           ),
           _buildDivider(isDark),
           ProfileMenuItem(

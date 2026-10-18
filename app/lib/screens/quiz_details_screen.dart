@@ -5,6 +5,7 @@ import '../widgets/quiz_details/category_about_section.dart';
 import '../widgets/quiz_details/category_hero_card.dart';
 import '../widgets/quiz_details/category_instructions_section.dart';
 import '../widgets/quiz_details/start_quiz_button.dart';
+import 'quiz_screen.dart';
 
 class QuizDetailsScreen extends StatelessWidget {
   final QuizCategory category;
@@ -68,6 +69,12 @@ class QuizDetailsScreen extends StatelessWidget {
               child: StartQuizButton(
                 onPressed: () {
                   AppSettings.instance.triggerHaptic();
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => QuizScreen(category: category),
+                    ),
+                  );
                 },
               ),
             ),
