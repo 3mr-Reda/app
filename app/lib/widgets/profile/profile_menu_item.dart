@@ -5,7 +5,9 @@ class ProfileMenuItem extends StatelessWidget {
   final Color iconBgColor;
   final Color iconColor;
   final String title;
+  final String? subtitle;
   final Color? titleColor;
+  final Widget? trailing;
   final VoidCallback onTap;
 
   const ProfileMenuItem({
@@ -14,7 +16,9 @@ class ProfileMenuItem extends StatelessWidget {
     required this.iconBgColor,
     required this.iconColor,
     required this.title,
+    this.subtitle,
     this.titleColor,
+    this.trailing,
     required this.onTap,
   });
 
@@ -47,23 +51,43 @@ class ProfileMenuItem extends StatelessWidget {
                 ),
               ),
               const SizedBox(width: 14),
-              // Menu Title
+              // Menu Title & Subtitle
               Expanded(
-                child: Text(
-                  title,
-                  style: TextStyle(
-                    color: titleColor ?? defaultTitleColor,
-                    fontSize: 15,
-                    fontWeight: FontWeight.w600,
-                  ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(
+                      title,
+                      style: TextStyle(
+                        color: titleColor ?? defaultTitleColor,
+                        fontSize: 15,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                    if (subtitle != null) ...[
+                      const SizedBox(height: 2),
+                      Text(
+                        subtitle!,
+                        style: TextStyle(
+                          color: isDark
+                              ? const Color(0xFF94A3B8)
+                              : const Color(0xFF64748B),
+                          fontSize: 12,
+                          fontWeight: FontWeight.w400,
+                        ),
+                      ),
+                    ],
+                  ],
                 ),
               ),
-              // Arrow Right
-              const Icon(
-                Icons.chevron_right_rounded,
-                color: Color(0xFF94A3B8),
-                size: 22,
-              ),
+              // Trailing widget or Arrow Right
+              trailing ??
+                  const Icon(
+                    Icons.chevron_right_rounded,
+                    color: Color(0xFF94A3B8),
+                    size: 22,
+                  ),
             ],
           ),
         ),

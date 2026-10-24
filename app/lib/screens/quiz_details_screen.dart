@@ -9,10 +9,12 @@ import 'quiz_screen.dart';
 
 class QuizDetailsScreen extends StatelessWidget {
   final QuizCategory category;
+  final String difficulty;
 
   const QuizDetailsScreen({
     super.key,
     required this.category,
+    this.difficulty = 'Medium',
   });
 
   @override
@@ -50,7 +52,10 @@ class QuizDetailsScreen extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    CategoryHeroCard(category: category),
+                    CategoryHeroCard(
+                      category: category,
+                      difficulty: difficulty,
+                    ),
                     const SizedBox(height: 28),
                     CategoryAboutSection(aboutText: category.about),
                     const SizedBox(height: 24),
@@ -72,7 +77,10 @@ class QuizDetailsScreen extends StatelessWidget {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (_) => QuizScreen(category: category),
+                      builder: (_) => QuizScreen(
+                        category: category,
+                        difficulty: difficulty,
+                      ),
                     ),
                   );
                 },

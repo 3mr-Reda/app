@@ -13,11 +13,13 @@ import 'result_screen.dart';
 
 class QuizScreen extends StatefulWidget {
   final QuizCategory category;
+  final String difficulty;
   final void Function(BuildContext context)? onFinish;
 
   const QuizScreen({
     super.key,
     required this.category,
+    this.difficulty = 'Medium',
     this.onFinish,
   });
 
@@ -27,11 +29,12 @@ class QuizScreen extends StatefulWidget {
 
 class _QuizScreenState extends State<QuizScreen> {
   Timer? _timer;
-  int _secondsRemaining = 75; // 01:15 default countdown
+  late int _secondsRemaining;
 
   @override
   void initState() {
     super.initState();
+    _secondsRemaining = widget.category.durationMinutes * 60; // 15 minutes (900 seconds)
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!mounted) return;
       final provider = context.read<QuizProvider>();
@@ -42,7 +45,7 @@ class _QuizScreenState extends State<QuizScreen> {
 
   void _startTimer() {
     _timer?.cancel();
-    _secondsRemaining = 75;
+    _secondsRemaining = widget.category.durationMinutes * 60;
     _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
       if (!mounted) {
         timer.cancel();
@@ -86,6 +89,7 @@ class _QuizScreenState extends State<QuizScreen> {
       correct: quiz.correctAnswers,
       total: quiz.totalQuestions,
       selectedAnswers: quiz.selectedAnswers,
+      difficulty: widget.difficulty,
     );
 
     if (widget.onFinish != null) {
@@ -145,6 +149,7 @@ class _QuizScreenState extends State<QuizScreen> {
                 totalQuestions: totalQuestions,
                 secondsRemaining: _secondsRemaining,
                 isDark: isDark,
+                difficulty: widget.difficulty,
               ),
 
               // 2. Question, Code snippet, and Options

@@ -1,10 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:provider/provider.dart';
+import '../../models/quiz_category.dart';
+import '../../providers/quiz_provider.dart';
+import '../../screens/review_answers_screen.dart';
 import '../../services/app_settings.dart';
 
 class ResultsBottomSheet {
   static void show(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
+    final quiz = context.read<QuizProvider>();
+    final results = quiz.completedResults.values.toList();
 
     showModalBottomSheet(
       context: context,
@@ -37,39 +43,82 @@ class ResultsBottomSheet {
               ],
             ),
             const SizedBox(height: 16),
-            ListTile(
-              tileColor:
-                  isDark ? const Color(0xFF0F172A) : const Color(0xFFF8FAFC),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(14),
-              ),
-              title: const Text('Flutter & Dart Mastery'),
-              subtitle: const Text('Completed on Oct 12 • Score: 9/10'),
-              trailing: const Text(
-                '90%',
-                style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  color: Colors.green,
+            if (results.isEmpty)
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 24),
+                child: Center(
+                  child: Column(
+                    children: [
+                      Icon(
+                        Icons.quiz_outlined,
+                        size: 44,
+                        color: isDark
+                            ? const Color(0xFF64748B)
+                            : const Color(0xFF94A3B8),
+                      ),
+                      const SizedBox(height: 10),
+                      Text(
+                        'No quizzes completed yet',
+                        style: TextStyle(
+                          fontSize: 15,
+                          fontWeight: FontWeight.w600,
+                          color:
+                              isDark ? Colors.white : const Color(0xFF1E293B),
+                        ),
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        'Complete a quiz to view your score history here.',
+                        style: TextStyle(
+                          fontSize: 13,
+                          color: isDark
+                              ? const Color(0xFF94A3B8)
+                              : const Color(0xFF64748B),
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
-              ),
-            ),
-            const SizedBox(height: 8),
-            ListTile(
-              tileColor:
-                  isDark ? const Color(0xFF0F172A) : const Color(0xFFF8FAFC),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(14),
-              ),
-              title: const Text('Mobile UI/UX Design'),
-              subtitle: const Text('Completed on Oct 10 • Score: 8/10'),
-              trailing: const Text(
-                '80%',
-                style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  color: Colors.blue,
-                ),
-              ),
-            ),
+              )
+            else
+              ...results.map((res) {
+                final category = QuizCategory.sampleCategories.firstWhere(
+                  (c) => c.id == res.categoryId,
+                  orElse: () => QuizCategory.sampleCategories.first,
+                );
+                return Padding(
+                  padding: const EdgeInsets.only(bottom: 8),
+                  child: ListTile(
+                    tileColor: isDark
+                        ? const Color(0xFF0F172A)
+                        : const Color(0xFFF8FAFC),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(14),
+                    ),
+                    title: Text(res.categoryTitle),
+                    subtitle: Text('Score: ${res.correct}/${res.total}'),
+                    trailing: Text(
+                      '${res.percentage.round()}%',
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        color: res.percentage >= 70
+                            ? Colors.green
+                            : const Color(0xFF5B5BF0),
+                      ),
+                    ),
+                    onTap: () {
+                      Navigator.pop(ctx);
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) =>
+                              ReviewAnswersScreen(category: category),
+                        ),
+                      );
+                    },
+                  ),
+                );
+              }),
           ],
         ),
       ),

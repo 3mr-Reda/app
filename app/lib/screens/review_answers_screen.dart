@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
+import '../data/quiz_questions.dart';
 import '../models/quiz_category.dart';
 import '../providers/quiz_provider.dart';
 import '../services/app_settings.dart';
@@ -37,15 +38,33 @@ class _ReviewAnswersScreenState extends State<ReviewAnswersScreen> {
   Widget build(BuildContext context) {
     final quiz = context.watch<QuizProvider>();
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    final allQuestions = quiz.questions;
-    final selectedAnswers = quiz.selectedAnswers;
+
+    final savedResult = quiz.completedResults[widget.category.id];
+    final allQuestions = getQuestionsForCategory(widget.category.id);
+    final selectedAnswers = savedResult?.selectedAnswers ??
+        (quiz.categoryId == widget.category.id
+            ? quiz.selectedAnswers
+            : const <int, int>{});
+
+    // Calculate counts for this specific category
+    int correctCount = 0;
+    int wrongCount = 0;
+    for (int i = 0; i < allQuestions.length; i++) {
+      if (selectedAnswers.containsKey(i)) {
+        if (selectedAnswers[i] == allQuestions[i].correctAnswerIndex) {
+          correctCount++;
+        } else {
+          wrongCount++;
+        }
+      }
+    }
 
     // Filter questions based on selection
     final List<int> displayIndices = [];
     for (int i = 0; i < allQuestions.length; i++) {
       final userAns = selectedAnswers[i];
       final correctAns = allQuestions[i].correctAnswerIndex;
-      final isCorrect = userAns == correctAns;
+      final isCorrect = userAns != null && userAns == correctAns;
 
       if (_currentFilter == ReviewFilter.all) {
         displayIndices.add(i);
@@ -57,8 +76,6 @@ class _ReviewAnswersScreenState extends State<ReviewAnswersScreen> {
     }
 
     final totalCount = allQuestions.length;
-    final correctCount = quiz.correctAnswers;
-    final wrongCount = quiz.wrongAnswers;
 
     return Scaffold(
       backgroundColor:

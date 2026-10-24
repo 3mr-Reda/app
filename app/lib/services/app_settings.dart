@@ -89,16 +89,17 @@ class AppSettings extends ChangeNotifier {
     }
   }
 
-  // 3. User Info
-  String _userName = 'Menna';
+  // 3. User Info (starts empty until user enters their name)
+  String _userName = '';
   String get userName => _userName;
 
   final String _role = 'Quiz Enthusiast';
   String get role => _role;
 
   void setUserName(String name) {
-    if (name.trim().isNotEmpty && _userName != name) {
-      _userName = name.trim();
+    final trimmed = name.trim();
+    if (_userName != trimmed) {
+      _userName = trimmed;
       triggerHaptic();
       notifyListeners();
     }

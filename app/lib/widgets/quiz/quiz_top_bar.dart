@@ -6,6 +6,7 @@ class QuizTopBar extends StatelessWidget {
   final int totalQuestions;
   final int secondsRemaining;
   final bool isDark;
+  final String? difficulty;
 
   const QuizTopBar({
     super.key,
@@ -13,7 +14,20 @@ class QuizTopBar extends StatelessWidget {
     required this.totalQuestions,
     required this.secondsRemaining,
     required this.isDark,
+    this.difficulty,
   });
+
+  Color _getDifficultyColor(String diff) {
+    switch (diff) {
+      case 'Easy':
+        return const Color(0xFF10B981);
+      case 'Hard':
+        return const Color(0xFFEF4444);
+      case 'Medium':
+      default:
+        return const Color(0xFFF59E0B);
+    }
+  }
 
   String _formatTime(int totalSeconds) {
     final minutes = (totalSeconds ~/ 60).toString().padLeft(2, '0');
@@ -32,14 +46,38 @@ class QuizTopBar extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          // Question Counter: e.g. "3/10"
-          Text(
-            '${currentQuestionIndex + 1}/$totalQuestions',
-            style: GoogleFonts.plusJakartaSans(
-              fontSize: 16,
-              fontWeight: FontWeight.w800,
-              color: isDark ? Colors.white : const Color(0xFF0F172A),
-            ),
+          // Question Counter & Difficulty Badge
+          Row(
+            children: [
+              Text(
+                '${currentQuestionIndex + 1}/$totalQuestions',
+                style: GoogleFonts.plusJakartaSans(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w800,
+                  color: isDark ? Colors.white : const Color(0xFF0F172A),
+                ),
+              ),
+              if (difficulty != null) ...[
+                const SizedBox(width: 8),
+                Container(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                  decoration: BoxDecoration(
+                    color: _getDifficultyColor(difficulty!)
+                        .withValues(alpha: isDark ? 0.25 : 0.12),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: Text(
+                    difficulty!,
+                    style: GoogleFonts.plusJakartaSans(
+                      fontSize: 11,
+                      fontWeight: FontWeight.w700,
+                      color: _getDifficultyColor(difficulty!),
+                    ),
+                  ),
+                ),
+              ],
+            ],
           ),
 
           // Timer Pill Badge: e.g. "01:12"

@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:app/services/app_settings.dart';
 import 'package:app/widgets/profile/profile_menu_item.dart';
 
 class ProfileMenuSection extends StatelessWidget {
   final Color? primaryColor;
+  final VoidCallback? onThemeTap;
   final VoidCallback? onMyResultsTap;
   final VoidCallback? onHelpTap;
   final VoidCallback? onLogoutTap;
@@ -10,6 +12,7 @@ class ProfileMenuSection extends StatelessWidget {
   const ProfileMenuSection({
     super.key,
     this.primaryColor,
+    this.onThemeTap,
     this.onMyResultsTap,
     this.onHelpTap,
     this.onLogoutTap,
@@ -17,11 +20,14 @@ class ProfileMenuSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final isDark = AppSettings.instance.isDarkMode(context);
     final cardColor = isDark ? const Color(0xFF1E293B) : Colors.white;
     final borderColor = isDark ? const Color(0xFF334155) : const Color(0xCCE2E8F0);
     final accent = primaryColor ?? const Color(0xFF6366F1);
     final iconBg = accent.withValues(alpha: isDark ? 0.2 : 0.1);
+
+    final themeIconBg = isDark ? const Color(0xFF312E81) : const Color(0xFFFEF3C7);
+    final themeIconColor = isDark ? const Color(0xFFA5B4FC) : const Color(0xFFD97706);
 
     return Container(
       decoration: BoxDecoration(
@@ -41,6 +47,30 @@ class ProfileMenuSection extends StatelessWidget {
       ),
       child: Column(
         children: [
+          // Theme Option (Light / Dark)
+          ProfileMenuItem(
+            icon: isDark ? Icons.dark_mode_rounded : Icons.light_mode_rounded,
+            iconBgColor: themeIconBg,
+            iconColor: themeIconColor,
+            title: 'Theme',
+            subtitle: isDark ? 'Dark Mode' : 'Light Mode',
+            trailing: Switch.adaptive(
+              value: isDark,
+              activeThumbColor: accent,
+              onChanged: (value) {
+                AppSettings.instance.setThemeMode(
+                  value ? AppThemeMode.dark : AppThemeMode.light,
+                );
+              },
+            ),
+            onTap: onThemeTap ??
+                () {
+                  AppSettings.instance.setThemeMode(
+                    isDark ? AppThemeMode.light : AppThemeMode.dark,
+                  );
+                },
+          ),
+          _buildDivider(isDark),
           ProfileMenuItem(
             icon: Icons.assignment_outlined,
             iconBgColor: iconBg,

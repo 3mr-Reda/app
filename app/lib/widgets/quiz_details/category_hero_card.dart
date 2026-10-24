@@ -5,10 +5,12 @@ import 'info_pill.dart';
 
 class CategoryHeroCard extends StatelessWidget {
   final QuizCategory category;
+  final String difficulty;
 
   const CategoryHeroCard({
     super.key,
     required this.category,
+    this.difficulty = 'Medium',
   });
 
   Widget _buildCategoryIcon() {
@@ -115,6 +117,10 @@ class CategoryHeroCard extends StatelessWidget {
               InfoPill(
                 icon: Icons.calendar_today_outlined,
                 label: '${category.durationMinutes} Minutes',
+              ),
+              InfoPill(
+                icon: Icons.speed_rounded,
+                label: difficulty,
               ),
             ],
           ),

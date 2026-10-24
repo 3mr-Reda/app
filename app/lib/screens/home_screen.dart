@@ -7,23 +7,38 @@ import '../widgets/profile/profile_bottom_nav_bar.dart';
 import 'all_results_screen.dart';
 import 'profile_screen.dart';
 import 'quiz_details_screen.dart';
+import 'quizzes_screen.dart';
 
 class HomeScreen extends StatefulWidget {
-  const HomeScreen({super.key});
+  final int initialIndex;
+
+  const HomeScreen({
+    super.key,
+    this.initialIndex = 0,
+  });
 
   @override
   State<HomeScreen> createState() => _HomeScreenState();
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  int _currentIndex = 0;
+  late int _currentIndex;
 
-  void _onCategoryTap(QuizCategory category) {
+  @override
+  void initState() {
+    super.initState();
+    _currentIndex = widget.initialIndex;
+  }
+
+  void _onCategoryTap(QuizCategory category, [String difficulty = 'Medium']) {
     AppSettings.instance.triggerHaptic();
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => QuizDetailsScreen(category: category),
+        builder: (context) => QuizDetailsScreen(
+          category: category,
+          difficulty: difficulty,
+        ),
       ),
     );
   }
@@ -40,10 +55,57 @@ class _HomeScreenState extends State<HomeScreen> {
       Navigator.push(
         context,
         MaterialPageRoute(builder: (context) => const ProfileScreen()),
-      ).then((_) {
-        if (mounted) setState(() => _currentIndex = 0);
+      ).then((selectedTab) {
+        if (mounted && selectedTab is int) {
+          setState(() => _currentIndex = selectedTab);
+        } else if (mounted) {
+          setState(() => _currentIndex = 0);
+        }
       });
     }
+  }
+
+  Widget _buildBody() {
+    if (_currentIndex == 1) {
+      return QuizzesScreen(onCategoryTap: _onCategoryTap);
+    }
+    if (_currentIndex == 2) {
+      return AllResultsScreen(
+        onGoHome: () => setState(() => _currentIndex = 0),
+        onGoToQuizzes: () => setState(() => _currentIndex = 1),
+      );
+    }
+    if (_currentIndex == 3) {
+      return const ProfileScreen();
+    }
+    return SingleChildScrollView(
+      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          HomeHeader(
+            onProfileTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const ProfileScreen(),
+                ),
+              ).then((selectedTab) {
+                if (mounted && selectedTab is int) {
+                  setState(() => _currentIndex = selectedTab);
+                }
+              });
+            },
+          ),
+          const SizedBox(height: 24),
+          CategoryGrid(
+            categories: QuizCategory.sampleCategories,
+            onCategoryTap: _onCategoryTap,
+          ),
+          const SizedBox(height: 16),
+        ],
+      ),
+    );
   }
 
   @override
@@ -56,36 +118,7 @@ class _HomeScreenState extends State<HomeScreen> {
         return Scaffold(
           backgroundColor: Theme.of(context).scaffoldBackgroundColor,
           body: SafeArea(
-            child: _currentIndex == 2
-                ? AllResultsScreen(
-                    onGoHome: () => setState(() => _currentIndex = 0),
-                    onGoToQuizzes: () => setState(() => _currentIndex = 0),
-                  )
-                : SingleChildScrollView(
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 20, vertical: 16),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        HomeHeader(
-                          onProfileTap: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => const ProfileScreen(),
-                              ),
-                            );
-                          },
-                        ),
-                        const SizedBox(height: 24),
-                        CategoryGrid(
-                          categories: QuizCategory.sampleCategories,
-                          onCategoryTap: _onCategoryTap,
-                        ),
-                        const SizedBox(height: 16),
-                      ],
-                    ),
-                  ),
+            child: _buildBody(),
           ),
           bottomNavigationBar: ProfileBottomNavBar(
             currentIndex: _currentIndex,

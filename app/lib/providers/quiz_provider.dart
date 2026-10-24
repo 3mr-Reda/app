@@ -9,6 +9,7 @@ class CategoryQuizResult {
   final int total;
   final DateTime completedAt;
   final Map<int, int> selectedAnswers;
+  final String difficulty;
 
   const CategoryQuizResult({
     required this.categoryId,
@@ -17,6 +18,7 @@ class CategoryQuizResult {
     required this.total,
     required this.completedAt,
     required this.selectedAnswers,
+    this.difficulty = 'Medium',
   });
 
   int get wrong => total - correct;
@@ -29,29 +31,8 @@ class QuizProvider with ChangeNotifier {
   int _currentQuestionIndex = 0;
   final Map<int, int> _selectedAnswers = {};
 
-  // Store completed results for all categories
-  final Map<String, CategoryQuizResult> _completedResults = {
-    // Initial baseline sample matching the 8/10 from the design screenshot
-    'flutter': CategoryQuizResult(
-      categoryId: 'flutter',
-      categoryTitle: 'Flutter',
-      correct: 8,
-      total: 10,
-      completedAt: DateTime.now().subtract(const Duration(minutes: 10)),
-      selectedAnswers: {
-        0: 1, // correct
-        1: 0, // correct
-        2: 1, // correct
-        3: 1, // correct
-        4: 1, // correct
-        5: 2, // wrong
-        6: 2, // correct
-        7: 1, // correct
-        8: 1, // wrong
-        9: 1, // correct
-      },
-    ),
-  };
+  // Store completed results for all categories (starts empty until user completes quizzes)
+  final Map<String, CategoryQuizResult> _completedResults = {};
 
   // Getters
   String get categoryId => _categoryId;
@@ -85,25 +66,48 @@ class QuizProvider with ChangeNotifier {
   int? get selectedAnswerForCurrent => _selectedAnswers[_currentQuestionIndex];
 
   // --- Aggregate Getters across all completed quizzes ---
+  bool get hasCompletedQuizzes => _completedResults.isNotEmpty;
   int get totalQuizzesCompleted => _completedResults.length;
 
   int get overallTotalQuestions {
-    if (_completedResults.isEmpty) return totalQuestions;
+    if (_completedResults.isEmpty) return 0;
     return _completedResults.values.fold(0, (sum, res) => sum + res.total);
   }
 
   int get overallCorrectAnswers {
-    if (_completedResults.isEmpty) return correctAnswers;
+    if (_completedResults.isEmpty) return 0;
     return _completedResults.values.fold(0, (sum, res) => sum + res.correct);
   }
 
   int get overallWrongAnswers {
+    if (_completedResults.isEmpty) return 0;
     return overallTotalQuestions - overallCorrectAnswers;
   }
 
   double get overallPercentage {
     if (overallTotalQuestions == 0) return 0;
     return (overallCorrectAnswers / overallTotalQuestions) * 100;
+  }
+
+  double get averageScore {
+    if (_completedResults.isEmpty) return 0;
+    final total =
+        _completedResults.values.fold(0, (sum, res) => sum + res.correct);
+    return double.parse((total / _completedResults.length).toStringAsFixed(1));
+  }
+
+  CategoryQuizResult? get latestResult {
+    if (_completedResults.isEmpty) return null;
+    return _completedResults.values.reduce(
+      (a, b) => a.completedAt.isAfter(b.completedAt) ? a : b,
+    );
+  }
+
+  /// Clear all completed results back to empty state
+  void clearAllResults() {
+    _completedResults.clear();
+    resetQuiz();
+    notifyListeners();
   }
 
   /// Save completed result for a category
@@ -113,6 +117,7 @@ class QuizProvider with ChangeNotifier {
     required int correct,
     required int total,
     required Map<int, int> selectedAnswers,
+    String difficulty = 'Medium',
   }) {
     _completedResults[categoryId] = CategoryQuizResult(
       categoryId: categoryId,
@@ -121,6 +126,7 @@ class QuizProvider with ChangeNotifier {
       total: total,
       completedAt: DateTime.now(),
       selectedAnswers: Map.from(selectedAnswers),
+      difficulty: difficulty,
     );
     notifyListeners();
   }
